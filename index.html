@@ -530,8 +530,20 @@ discussionToggles.forEach(toggle => {
 
       setTimeout(() => {
         removeTypingIndicator();
-        const normalized = text.toLowerCase().trim().replace(/[?.!]+$/, '');
-        const reply = botReplies[normalized] || "Unfortunately I couldn't find any answer for this topic. Please use the search feature to search for specific courses.";
+        function normalize(text) {
+  return text.toLowerCase().trim().replace(/[^\w\s]/g, '');
+}
+
+    const normalizedInput = normalize(text);
+
+      // Create a lookup map with normalized keys:
+      const normalizedBotReplies = Object.fromEntries(
+        Object.entries(botReplies).map(([key, value]) => [normalize(key), value])
+      );
+
+      const reply = normalizedBotReplies[normalizedInput] ||
+  "Unfortunately I couldn't find any answer for this topic. Please use the search feature to search for specific courses.";
+
         addMessage('bot', reply);
       }, 1500);
     });
